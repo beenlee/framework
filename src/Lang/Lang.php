@@ -1,5 +1,6 @@
 <?php
-namespace Been;
+namespace Beenlee\Framework\Lang;
+use Beenlee\Framework\Base\Base;
 
 class Lang {
 	

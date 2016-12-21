@@ -5,17 +5,20 @@
 *  QQ:281443751
 *  Email:binbin1129@126.com
 **/
-namespace Been;
-include_once('Base.class.php');
 
-class Model  extends \Been\Base {
+namespace Beenlee\Framework\MiddleWare;
+
+use Beenlee\Framework\Base\Base;
+use Beenlee\SqlBuilder\SqlBuilder;
+
+
+class Model extends Base {
 
     protected $_sqlBuider;
 
     public function getSqlBuilder () {
         if (!$this -> _sqlBuider) {
-            require_once('Db/SqlBuilder.php');
-            $this -> _sqlBuider = new \Been\Db\SqlBuilder();
+            $this -> _sqlBuider = new SqlBuilder();
         }
         return $this -> _sqlBuider;
     }

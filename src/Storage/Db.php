@@ -5,7 +5,7 @@
 *  QQ:281443751
 *  Email:binbin1129@126.com
 **/
-namespace Been;
+namespace Beenlee\Framework\Storage;
 
 class Db {
     protected $_dbConf = null;

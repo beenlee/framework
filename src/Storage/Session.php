@@ -1,5 +1,6 @@
 <?php
-namespace Been\Storage;
+namespace Beenlee\Framework\Storage;
+
 class Session {
     
     /**

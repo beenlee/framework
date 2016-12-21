@@ -6,10 +6,11 @@
 *  Email:binbin1129@126.com
 **/
 
-namespace Been;
+namespace Beenlee\Framework\Controller;
+use Beenlee\Framework\Base\Base;
 
-include_once('Base.class.php');
-abstract class Controller extends \Been\Base {
+// include_once('Base.class.php');
+abstract class Controller extends Base {
 	
 	/**
 	 * 控制页面跳转

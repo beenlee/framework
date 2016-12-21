@@ -2,10 +2,10 @@
 /**
  * @Author: beenlee
  * @Date:   2016-03-24 16:59:00
- * @Last Modified by:   beenlee
- * @Last Modified time: 2016-03-24 18:42:26
+ * @Last Modified by:   dabeen
+ * @Last Modified time: 2016-12-21 14:21:53
  */
-namespace Been;
+namespace Beenlee\Framework\Storage;
 
 class Storage {
     

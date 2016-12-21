@@ -3,11 +3,11 @@
  * @Author: beenlee
  * @Date:   2016-03-06 00:37:56
  * @Last Modified by:   dabeen
- * @Last Modified time: 2016-12-20 23:40:55
+ * @Last Modified time: 2016-12-21 14:16:26
  */
 
-namespace Been;
-include_once 'Storage.php';
+namespace Beenlee\Framework\Abstract;
+// include_once 'Storage.php';
 
 abstract class Base {
     

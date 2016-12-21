@@ -6,7 +6,7 @@
 *  Email:binbin1129@126.com
 **/
 
-namespace Been;
+namespace Beenlee\Framework\Storage;
 
 include_once("Smarty/Smarty.class.php");
 

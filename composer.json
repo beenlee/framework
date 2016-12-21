@@ -7,5 +7,10 @@
             "email": "lidianbin@baidu.com"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "Beenlee\\Framework\\": "src"
+        }
+    },
     "require": {}
 }

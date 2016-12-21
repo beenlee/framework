@@ -5,12 +5,7 @@
 *  QQ:281443751
 *  Email:binbin1129@126.com
 **/
-namespace Been;
-// include_once 'Storage.php';
-// include_once 'Controller.class.php';
-// include_once 'Model.class.php';
-// include_once 'Request.class.php';
-// include_once 'MiddleWare.class.php';
+namespace Beenlee\Framework\App;
 
 class App{
     protected static $_instance = null;
@@ -48,8 +43,8 @@ class App{
     }
 
     public function run( $conf = array('cPath' => "./controllers", 'mPath' => './model')) {
-        if (!$this->_cPath) $this -> setCPath($conf['cPath']);
-        if (!$this->_mPath) $this -> setMPath($conf['mPath']);
+        // if (!$this->_cPath) $this -> setCPath($conf['cPath']);
+        // if (!$this->_mPath) $this -> setMPath($conf['mPath']);
         $this -> preDispatch();
         $this -> dispatch();
         return true;
@@ -219,22 +214,22 @@ class App{
         exit();
     }
 
-    
+
     /**
      * 加载工具类
      * @param  $classname
      * @return  @param
      */
-    public function loadUtilClass($classname){
-        if (array_key_exists($classname, $this->_utils)) {
-            return $this->_utils[$classname];
-        }
-        $new_filename = 'Util/' . $classname . '.php';
+    // public function loadUtilClass($classname){
+    //     if (array_key_exists($classname, $this->_utils)) {
+    //         return $this->_utils[$classname];
+    //     }
+    //     $new_filename = 'Util/' . $classname . '.php';
         
-        require_once($new_filename); // 载入文件
-        return $this -> _utils[$classname] =  new $classname();
-    }
-    
+    //     require_once($new_filename); // 载入文件
+    //     return $this -> _utils[$classname] =  new $classname();
+    // }
+
     /**
      * 设置配置文件的路径末尾不加 /
      * @param unknown_type $path
@@ -244,7 +239,7 @@ class App{
         $this -> _confPath = rtrim($path, "/");
         return $this;
     }
-    
+
     /**
      * 加载配置文件
      * @param  string $confName 配置项名字
