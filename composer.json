@@ -1,0 +1,11 @@
+{
+    "name": "dabeen/framework",
+    "description": "php framework",
+    "authors": [
+        {
+            "name": "lidianbin",
+            "email": "lidianbin@baidu.com"
+        }
+    ],
+    "require": {}
+}
