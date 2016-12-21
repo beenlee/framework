@@ -6,11 +6,10 @@
 *  Email:binbin1129@126.com
 **/
 
-namespace Beenlee\Framework\MiddleWare;
+namespace Beenlee\Framework\Model;
 
-use Beenlee\Framework\Base\Base;
+use Beenlee\Framework\Abstracts\Base;
 use Beenlee\SqlBuilder\SqlBuilder;
-
 
 class Model extends Base {
 

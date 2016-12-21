@@ -1,8 +1,8 @@
 <?php
 namespace Beenlee\Framework\Lang;
-use Beenlee\Framework\Base\Base;
+use Beenlee\Framework\Abstract\Base;
 
-class Lang {
+class Lang extends Base{
 	
 	protected $_data = array(); 
 	

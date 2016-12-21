@@ -3,7 +3,7 @@
  * @Author: beenlee
  * @Date:   2016-03-24 16:59:00
  * @Last Modified by:   dabeen
- * @Last Modified time: 2016-12-21 14:21:53
+ * @Last Modified time: 2016-12-21 15:23:49
  */
 namespace Beenlee\Framework\Storage;
 
@@ -45,8 +45,7 @@ class Storage {
 
     public static function getSession () {
         if (null === self::$_session) {
-            include_once('Storage/Session.php');
-            return self::$_session = new Storage\Session();
+            return self::$_session = new Session();
         }
         return self::$_session;
     }
@@ -58,8 +57,7 @@ class Storage {
 
     public static function getCookie () {
         if (null === self::$_cookie) {
-            include_once('Storage/Cookie.php');
-            return self::$_cookie = new Storage\Cookie();
+            return self::$_cookie = new Cookie();
         }
         return self::$_cookie;
     }
@@ -72,8 +70,7 @@ class Storage {
     public static function getFile () {
         if (null === self::$_file) {
             if (null === self::$_file) {
-            include_once('Storage/File.php');
-            return self::$_file = new Storage\File();
+            return self::$_file = new File();
         }
         }
         return self::$_file;

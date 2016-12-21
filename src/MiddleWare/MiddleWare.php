@@ -3,13 +3,13 @@
  * @Author: beenlee
  * @Date:   2016-03-17 14:22:06
  * @Last Modified by:   dabeen
- * @Last Modified time: 2016-12-21 14:18:27
+ * @Last Modified time: 2016-12-21 15:35:01
  */
 namespace Beenlee\Framework\MiddleWare;
-use Beenlee\Framework\Base\Base;
-include_once('Base.class.php');
 
-abstract class MiddleWare extends \Been\Base {
+use Beenlee\Framework\Abstracts\Base;
+
+abstract class MiddleWare extends Base {
 
     abstract public function excute();
     

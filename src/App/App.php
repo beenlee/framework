@@ -5,13 +5,18 @@
 *  QQ:281443751
 *  Email:binbin1129@126.com
 **/
+
 namespace Beenlee\Framework\App;
+use Beenlee\Framework\Storage\Storage;
+use Beenlee\Framework\Request\Request;
+use Beenlee\Framework\MiddleWare\MiddleWare;
 
 class App{
     protected static $_instance = null;
     protected $_request;
-    protected $_cPath;
-    protected $_mPath;
+
+    protected $_appNameSpace;
+
     protected $_view;
 
     protected $_data = array();//用于存储一些自定义的数据在内存中
@@ -42,30 +47,10 @@ class App{
         return self::$_instance;
     }
 
-    public function run( $conf = array('cPath' => "./controllers", 'mPath' => './model')) {
-        // if (!$this->_cPath) $this -> setCPath($conf['cPath']);
-        // if (!$this->_mPath) $this -> setMPath($conf['mPath']);
-        $this -> preDispatch();
-        $this -> dispatch();
-        return true;
-    }
-
-    /**
-     * 设置controller路径
-     * @param string $path
-     * @return APP
-     */
-    public function setCPath ($path) {
-        $this -> _cPath = $path;
-    }
-    
-    /**
-     * 设置model路径
-     * @param string $path
-     * @return APP
-     */
-    public function setMPath ($path) {
-        $this -> _mPath = $path;
+    public function run($appNameSpace) {
+        $this->_appNameSpace = $appNameSpace;
+        $this->preDispatch();
+        $this->dispatch();
     }
 
     /**
@@ -78,13 +63,11 @@ class App{
     
     public function  dispatch () {
         //判断当前有没有这个类和方法
-        $cName = $this -> _request -> cName . 'Controller';
-        $aName = $this -> _request -> aName;
-        if (!$this -> runCA($cName, $aName)) {
-            $this -> error404();
-        }
+        $cName = $this ->_request->cName . 'Controller';
+        $aName = $this ->_request->aName;
+        $this -> runCA($cName, $aName);
     }
-    
+
     /**
      * 分发之前
      * 可以在这里对用户的访问进行控制
@@ -92,8 +75,7 @@ class App{
      */
     public function preDispatch () {
         // 执行注入的中间件
-        $this -> excuteMiddelWare();
-        return true;
+        $this->excuteMiddelWare();
     }
     
     /**
@@ -103,19 +85,16 @@ class App{
      * @return controller
      */
     public function runCA ($cName, $aName, $param = null) {
-        if (class_exists($cName)) {
-            $controller = new $cName();
-            if (method_exists($controller, $aName)) {
-                if ($param !== null) {
-                    $controller -> $aName($param);
-                }
-                else {
-                    $controller -> $aName();
-                }
-                return true;
-            }
+
+        $controller = $this->_appNameSpace . '\\Controller\\' . $cName;
+        $controller = new $controller();
+
+        if ($param !== null) {
+            $controller->$aName($param);
         }
-        return false;
+        else {
+            $controller->$aName();
+        }
     }
 
     /**
@@ -123,7 +102,7 @@ class App{
      * @param unknown_type $Viewarr
      * @return string
      */
-    public function setView (View $view) {
+    public function setView ($view) {
         $this -> _view = $view;
         return $this;
     }
@@ -213,22 +192,6 @@ class App{
         echo "<meta http-equiv=refresh content='$time; url=" . $url . "' >";
         exit();
     }
-
-
-    /**
-     * 加载工具类
-     * @param  $classname
-     * @return  @param
-     */
-    // public function loadUtilClass($classname){
-    //     if (array_key_exists($classname, $this->_utils)) {
-    //         return $this->_utils[$classname];
-    //     }
-    //     $new_filename = 'Util/' . $classname . '.php';
-        
-    //     require_once($new_filename); // 载入文件
-    //     return $this -> _utils[$classname] =  new $classname();
-    // }
 
     /**
      * 设置配置文件的路径末尾不加 /

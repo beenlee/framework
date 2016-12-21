@@ -7,7 +7,7 @@
 **/
 
 namespace Beenlee\Framework\Controller;
-use Beenlee\Framework\Base\Base;
+use Beenlee\Framework\Abstracts\Base;
 
 // include_once('Base.class.php');
 abstract class Controller extends Base {

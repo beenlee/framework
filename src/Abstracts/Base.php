@@ -3,14 +3,15 @@
  * @Author: beenlee
  * @Date:   2016-03-06 00:37:56
  * @Last Modified by:   dabeen
- * @Last Modified time: 2016-12-21 14:16:26
+ * @Last Modified time: 2016-12-21 17:05:13
  */
 
-namespace Beenlee\Framework\Abstract;
-// include_once 'Storage.php';
+namespace Beenlee\Framework\Abstracts;
+use Beenlee\Framework\App\App;
+use Beenlee\Framework\Storage\Storage;
 
 abstract class Base {
-    
+
     /**
      * App 对象
      * @var App对象
@@ -23,20 +24,14 @@ abstract class Base {
      */
     public function getApp() {
         
-        if (null !== $this -> _app) {
-            return $this -> _app;
-        }
-        if (class_exists('App')) {
+        if (null === $this -> _app) {
             $this -> _app = App::getInstance();
-            return $this -> _app;
         }
-        else {
-            die ("没有App.class.php 这个文件");
-        }
+        return $this -> _app;
     }
     
-    public function  getRequest (){
-        return $this -> getApp() -> getRequest();   
+    public function  getRequest () { 
+        return $this -> getApp() -> getRequest();
     }
     
     public function getDb () {
