@@ -3,7 +3,7 @@
  * @Author: beenlee
  * @Date:   2016-03-06 00:37:56
  * @Last Modified by:   dabeen
- * @Last Modified time: 2016-12-21 17:05:13
+ * @Last Modified time: 2017-01-10 14:29:52
  */
 
 namespace Beenlee\Framework\Abstracts;
@@ -24,23 +24,18 @@ abstract class Base {
      */
     public function getApp() {
         
-        if (null === $this -> _app) {
-            $this -> _app = App::getInstance();
+        if (null === $this->_app) {
+            $this->_app = App::getInstance();
         }
-        return $this -> _app;
+        return $this->_app;
     }
     
     public function  getRequest () { 
-        return $this -> getApp() -> getRequest();
+        return $this->getApp()->getRequest();
     }
-    
-    public function getDb () {
-        // return $this -> getApp() -> getDb();
-        return Storage::getDao();
-    }
-    
+
     public function getView () {
-        return $this -> getApp() -> getView();
+        return $this->getApp()->getView();
     }
 
     /**
@@ -50,6 +45,6 @@ abstract class Base {
      * @return mix      缓存的变量
      */
     public function getData ($ns, $key) {
-        return $this -> getApp() -> getData($ns, $key);
+        return $this->getApp()->getData($ns, $key);
     }
 }

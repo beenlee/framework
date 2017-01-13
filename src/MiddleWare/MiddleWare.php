@@ -3,7 +3,7 @@
  * @Author: beenlee
  * @Date:   2016-03-17 14:22:06
  * @Last Modified by:   dabeen
- * @Last Modified time: 2016-12-21 15:35:01
+ * @Last Modified time: 2017-01-05 18:07:13
  */
 namespace Beenlee\Framework\MiddleWare;
 
@@ -11,14 +11,20 @@ use Beenlee\Framework\Abstracts\Base;
 
 abstract class MiddleWare extends Base {
 
-    abstract public function excute();
-    
-    public function getCName(){
-        return $this->getRequest()->cName;
+    // dispatch 之前
+    public function excuteBefore() {
     }
-    
-    public function getAName(){
-        return $this->getRequest()->aName;
+
+    // dispatch 之后
+    public function excuteAfter() {
+    }
+
+    public function excute($next, $param) {
+        $this->next($next, $param);
+    }
+
+    protected function next($next, $param) {
+        call_user_func($next, $param);
     }
 
 }

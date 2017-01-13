@@ -9,6 +9,7 @@
 namespace Beenlee\Framework\Model;
 
 use Beenlee\Framework\Abstracts\Base;
+use Beenlee\Framework\Storage\Storage;
 use Beenlee\SqlBuilder\SqlBuilder;
 
 class Model extends Base {
@@ -16,10 +17,10 @@ class Model extends Base {
     protected $_sqlBuider;
 
     public function getSqlBuilder () {
-        if (!$this -> _sqlBuider) {
-            $this -> _sqlBuider = new SqlBuilder();
+        if (!$this->_sqlBuider) {
+            $this->_sqlBuider = new SqlBuilder();
         }
-        return $this -> _sqlBuider;
+        return $this->_sqlBuider;
     }
 
     /**
@@ -28,7 +29,7 @@ class Model extends Base {
      * @return boolean      成功或者失败
      */
     public function del ($sql = null) {
-        return $this -> delete($sql);
+        return $this->delete($sql);
     }
 
     /**
@@ -37,9 +38,8 @@ class Model extends Base {
      * @return boolean      成功或者失败
      */
     public function delete ($sql = null) {
-        $sql === null && $sql = $this -> getSqlBuilder() -> getSql();
-        return $this -> getDb() -> del($sql);
-
+        $sql === null && $sql = $this->getSqlBuilder()->getSql();
+        return Storage::getDao()->del($sql);
     }
 
     /**
@@ -47,8 +47,8 @@ class Model extends Base {
      * return bool true/false
      */
     public function update ($sql = null) {
-        $sql === null && $sql = $this -> getSqlBuilder() -> getSql();
-        return $this -> getDb() -> update($sql);
+        $sql === null && $sql = $this->getSqlBuilder()->getSql();
+        return Storage::getDao()->update($sql);
     }
 
     /**
@@ -56,8 +56,8 @@ class Model extends Base {
      * return id or false
      */
     public function insert ($sql = null) {
-        $sql === null && $sql = $this -> getSqlBuilder() -> getSql();
-        return $this -> getDb() -> insert($sql);
+        $sql === null && $sql = $this->getSqlBuilder()->getSql();
+        return Storage::getDao()->insert($sql);
     }
 
     /**
@@ -65,8 +65,8 @@ class Model extends Base {
      * return false / array
      */
     public function fetchRow ($sql = null) {
-        $sql === null && $sql = $this -> getSqlBuilder() -> getSql();
-        return $this -> getDb() -> fetchRow($sql);
+        $sql === null && $sql = $this->getSqlBuilder()->getSql();
+        return Storage::getDao()->fetchRow($sql);
     }
     
     /**
@@ -74,8 +74,8 @@ class Model extends Base {
      * return array
      */      
     public function fetchAll ($sql = null) {
-        $sql === null && $sql = $this -> getSqlBuilder() -> getSql();
-        return $this -> getDb() -> fetchAll($sql);
+        $sql === null && $sql = $this->getSqlBuilder()->getSql();
+        return Storage::getDao()->fetchAll($sql);
     }
     
     /**
@@ -85,12 +85,11 @@ class Model extends Base {
     */
     public function getTotal ($table, $filter=NULL) {
         
-        return $this->getDb()->getTotal($table,$filter);
+        return Storage::getDao()->getTotal($table, $filter);
     }
 
-    public function getTotalFromSql($sql){
-    
-        return $this->getDb()->getTotalFromSql($sql);
+    public function getTotalFromSql($sql) {
+        return Storage::getDao()->getTotalFromSql($sql);
     }
 
     /**
@@ -119,7 +118,7 @@ class Model extends Base {
         }
         return $result;
     }
-    
+
     /**
      *
      * @param unknown_type $ts

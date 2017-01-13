@@ -10,128 +10,104 @@ namespace Beenlee\Framework\Request;
 
 class Request
 {
-	public $mName;//模块名字
-	public $cName;//controlle名字
-	public $aName;//action名字
-	
-	/**
-	 * 应用名字与应用所在文件夹相同
-	 * 如 app
-	 */
-	public $appName;
-	
-	/**
-	 * 应用的网站路径
-	 * 如 http://localhost/nkjob/admin
-	 */
-	public $appPath;
-	
-	/**
-	 * 带php文件的网站地址
-	 * 如 http://localhost/nkjob/admin.php
-	 */
-	public $phpUrl;
-	
-	/**
-	 * 不代php文件的网站地址
-	 * 如 http://localhost/nkjob
-	 */
-	public $hostUrl;
-	
-	protected $_get =array(); //get请求的数据
-	
-	public function __construct(){
-		$this->getRequestFromURL();
-	}
-	
-	
-	/**
-     * 从url中获取用户的请求参数
-     * 如 http://localhost/nkjob/admin.php/controllername/actionname/key1/value1/key2/value2
-     * 
+
+    /**
+     * 请求的路径 
+     * 如： /baidu/ife/id/1
+     * @var string
      */
-	protected function getRequestFromURL(){
-		//print_r($_SERVER);
-		$pathStr = dirname($_SERVER["SCRIPT_NAME"]);
-		//echo $_SERVER["REQUEST_URI"];
-		$len = strlen($pathStr);
-		
-		$filter_param = array('<','>','"',"'",'%3C','%3E','%22','%27','%3c','%3e');
-		$uri = str_replace($filter_param, '', $_SERVER['REQUEST_URI']);
-		//$uri = str_replace("//", '/', $uri);
-		$posi = strpos($uri, '?');
-		if ($posi) $uri = substr($uri,0,$posi);
-		
-		$paths = explode('/', str_replace("//", '/', trim( substr( $uri, $len ), '/') ) ) ;
-		// exit();
-		// if (array_key_exists(0,$paths)) {
-		// 	$this->mName = strtolower(array_shift($paths));
-		// }
-		// else {
-		// 	$this->mName = "index.php";
-		// }
-		
-		if (array_key_exists(0,$paths)) {
-			$this->cName = ucwords(strtolower(array_shift($paths)));
-			if ($this->cName == '') {
-				$this->cName = "Index";
-			}
-		}
-		else {
-			$this->cName = "Index";
-		}
+    protected $_requistPath;
 
-		if (array_key_exists(0,$paths)) {
-			$this->aName = ucwords(strtolower(array_shift($paths)));
-			if ($this->cName == '') {
-				$this->cName = "Index";
-			}
-		}
-		else {
-			$this->aName = "Index";
-		}
+    /**
+     * host
+     * 如 http://localhost:8080
+     */
+    protected $_hostUrl;
 
-		while (array_key_exists(0,$paths)) {
-			$this->_get[array_shift($paths)] = array_shift($paths);
-		}
-		
-		//print_r($_SERVER);
-		if($_SERVER['SERVER_PORT'] == 80){
-			$this->phpUrl="http://".$_SERVER['SERVER_NAME'].$_SERVER['SCRIPT_NAME'];
-		}else {
-			$this->phpUrl="http://".$_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT'].$_SERVER['SCRIPT_NAME'];
-		}
-		$this->hostUrl = dirname($this->phpUrl);
-		$this->appName = APPNAME;
-		$this->appPath = ($this->hostUrl).'/'.($this->appName);
-		//echo $this->cName,$this->aName;
-		return $this;
-	}
-	
-	/**
-	 * 根据key获取传来的数据的值 如果没有返回null
-	 * @param unknown_type $key
-	 * @return string or NULL
-	 */
-	public function get($key, $type = 'get', $mode = null) {
-		$val = null;
-		if ($type == 'get') {
-			$val = array_key_exists($key, $this->_get) ? $this->_get[$key] : (isset($_GET[$key]) ? $_GET[$key] : null);
-			
-		}
-		else if ($type == 'post') {
-			$val = array_key_exists($key,$_POST) ? $_POST[$key] : ( array_key_exists($key,$_POST) ? $_POST[$key] : null );
-		}
-		if (null !== $val){
-			if ($mode == 'noscript') {
-				$preg = "/<script[\s\S]*?<\/script>/i";
-				return $newstr = preg_replace($preg,"", $val, 3); 	
-			}
-			if ($mode == 'htmlEncode') {
-				return htmlspecialchars($val);
-			}
-		} 
-		
-		return $val;
-	}
+
+    public function __construct(){
+        $this->getRequestFromURL();
+    }
+
+    public function getRequestPath() {
+        return $this->_requistPath;
+    }
+
+    /**
+     * 从url中获取用户的请求参数
+     * 如 http://ife.baidu.com/controllername/actionname/key1/value1/key2/value2
+     */
+    protected function getRequestFromURL(){
+
+        $pathStr = dirname($_SERVER["SCRIPT_NAME"]);
+        $len = strlen($pathStr);
+        $filter_param = array('<','>','"',"'",'%3C','%3E','%22','%27','%3c','%3e');
+        $uri = str_replace($filter_param, '', $_SERVER['REQUEST_URI']);
+        $posi = strpos($uri, '?');
+
+        if ($posi) {
+            $uri = substr($uri, 0, $posi);
+        }
+        $this->_requistPath = $uri;
+
+        if ($_SERVER['SERVER_PORT'] == 80){
+            $this->hostUrl = "http://".$_SERVER['SERVER_NAME'];
+        }
+        else {
+            $this->hostUrl = "http://".$_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT'];
+        }
+
+        return $this;
+    }
+
+    /**
+     * 根据key获取传来的数据的值 如果没有返回null
+     *
+     * @param string $key
+     * @return string or NULL
+     */
+    public function get($key, $mode = null) {
+        $val = null;
+        $val = isset($_GET[$key]) ? $_GET[$key] : null;
+        return $this->filter($val, $mode);
+    }
+
+    /**
+     * 根据key获取传来的数据的值 如果没有返回null
+     *
+     * @param string $key
+     * @return string or NULL
+     */
+    public function post($key, $mode = null) {
+        $val = null;
+        $val = array_key_exists($key, $_POST) ? $_POST[$key] : null;
+        return $this->filter($val, $mode);
+    }
+
+    /**
+     * 过滤参数
+     * @param  string $val  值
+     * @param  string $mode 期望的类型
+     * @return mix
+     */
+    protected function filter($val, $mode) {
+        if (null !== $val && $mode) {
+            if ($mode == 'int') {
+                return (int) $val;
+            }
+            else if ($mode == 'noscript') {
+                $preg = "/<script[\s\S]*?<\/script>/i";
+                return preg_replace($preg, '', $val, 3);
+            }
+            else if ($mode == 'htmlEncode') {
+                return htmlspecialchars($val);
+            }
+        } 
+        return $val;
+    }
+
+    public function __get($name) {
+        return $this->$name;
+    }
+
 }

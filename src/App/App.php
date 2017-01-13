@@ -10,8 +10,9 @@ namespace Beenlee\Framework\App;
 use Beenlee\Framework\Storage\Storage;
 use Beenlee\Framework\Request\Request;
 use Beenlee\Framework\MiddleWare\MiddleWare;
+use Beenlee\Framework\Route\Route;
 
-class App{
+class App {
     protected static $_instance = null;
     protected $_request;
 
@@ -19,22 +20,22 @@ class App{
 
     protected $_view;
 
-    protected $_data = array();//用于存储一些自定义的数据在内存中
-    protected $_utils = array();//用于存储加载过的工具类
+    protected $_router;
+
+    protected $_data = array(); //用于存储一些自定义的数据在内存中
     protected $_models = array();//用于存储加载过的model类
-    
+
     protected $_confPath = "./";
     protected $_confs = array();//用于存储加载过的配置项
-    
+
     // 中间件列表
     protected $_MWList = array();
-    
+
     protected function __construct(){
-        // $this -> _autoload();
-        Storage::getSession() -> start();
+        Storage::getSession()->start();
         $this -> _request = new Request();
     }
-    
+
     /**
      * 获取实例 
      * @return APP
@@ -43,14 +44,33 @@ class App{
         if (null === self::$_instance) {
             self::$_instance = new self();
         }
-
         return self::$_instance;
     }
 
     public function run($appNameSpace) {
         $this->_appNameSpace = $appNameSpace;
-        $this->preDispatch();
-        $this->dispatch();
+        if (!$this->_router) {
+            $this->setRouter(new Route($this->_appNameSpace));
+        }
+        $this->_router->route($this->_request);
+        $this->excuteMiddleWare(array($this, 'dispatch'));
+    }
+
+    /**
+     * 依次执行middleWare
+     *
+     * @param  mix $callback
+     */
+    public function excuteMiddleWare($callback) {
+        $mw = array_shift($this->_MWList);
+        if (!$mw) {
+            call_user_func($callback);
+        }
+        else {
+            $mw->excuteBefore();
+            $mw->excute(array($this, 'excuteMiddleWare'), $callback);
+            $mw->excuteAfter();
+        }
     }
 
     /**
@@ -59,42 +79,18 @@ class App{
     public function getRequest () {
         return $this->_request;
     }
-    
-    
-    public function  dispatch () {
-        //判断当前有没有这个类和方法
-        $cName = $this ->_request->cName . 'Controller';
-        $aName = $this ->_request->aName;
-        $this -> runCA($cName, $aName);
+
+    public function dispatch () {
+        call_user_func_array([$this, 'runCA'], $this->_router->getRoute());
+        // $this->runCA();
     }
 
-    /**
-     * 分发之前
-     * 可以在这里对用户的访问进行控制
-     * @return boolean
-     */
-    public function preDispatch () {
-        // 执行注入的中间件
-        $this->excuteMiddelWare();
+    public function getRouter() {
+        return $this->_router;
     }
-    
-    /**
-     * 执行控制器的方法
-     * @param string $cName
-     * @param string $aName
-     * @return controller
-     */
-    public function runCA ($cName, $aName, $param = null) {
 
-        $controller = $this->_appNameSpace . '\\Controller\\' . $cName;
-        $controller = new $controller();
-
-        if ($param !== null) {
-            $controller->$aName($param);
-        }
-        else {
-            $controller->$aName();
-        }
+    public function setRouter(Route $router = null) {
+        $this->_router = $router;
     }
 
     /**
@@ -106,7 +102,7 @@ class App{
         $this -> _view = $view;
         return $this;
     }
-    
+
     /**
      * 
      * @return View
@@ -114,7 +110,7 @@ class App{
     public function getView () {
         return $this -> _view;
     }
-    
+
     /**
      * 注册中间件
      * @param  MiddleWare $mw [description]
@@ -125,13 +121,7 @@ class App{
         return $this;
     }
 
-    // 依次执行中间件
-    protected function excuteMiddelWare() {
-        array_map(function ($mw){
-            $mw -> excute();
-        }, $this -> _MWList);
-    }
-    
+
     /**
      * 添加缓存数据
      * @param unknown_type $key
@@ -164,78 +154,39 @@ class App{
     }
 
     /**
-     * 通过key获取数据
-     * @param unknown_type $key
-     * @return multitype:
+     * 执行控制器的方法
+     *
+     * @param string $cName
+     * @param string $aName
+     * @return controller
      */
-    public function error404 ($msg = null){
-        if (!$this -> runCA('ErrorController', 'Error404', $msg)) {
-            header("HTTP/1.1 404 Not Found");  
-            header("Status: 404 Not Found");  
+    protected function runCA($cName, $aName, $param = null) {
+
+        $cName = $this->_appNameSpace . '\\Controller\\' . $cName . 'Controller';
+
+        if (class_exists($cName)) {
+            $aName = $aName . 'Action';
+            $controller = new $cName();
+
+            if (method_exists($controller, $aName)) {
+                call_user_func_array([$controller, $aName], [$param]);
+            }
+            else {
+                throw new \Exception("$cName::$aName Not Exists");
+            }
         }
-        exit;
-    }
-
-    /**
-     * 控制页面跳转
-     * @param  $cName 控制器名
-     * @param  $aName 方法名
-     * @param  $time  停留时间
-     * @param  $message 显示信息
-     * @return 空
-     */
-    public function gotoUrl($url, $time = 0, $message = "") {
-        if($time > 0){
-            echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">";
-            echo $message . "<br/>" . $time . "秒后自动跳转！";
+        else {
+            throw new \Exception("$cName Not Exists");
         }
-        echo "<meta http-equiv=refresh content='$time; url=" . $url . "' >";
-        exit();
+
+        // if ($param) {
+        //     $controller->$aName($param);
+        // }
+        // else {
+        //     $controller->$aName();
+        // }
     }
 
-    /**
-     * 设置配置文件的路径末尾不加 /
-     * @param unknown_type $path
-     * @return App
-     */
-    public function setConfPath ($path) {
-        $this -> _confPath = rtrim($path, "/");
-        return $this;
-    }
 
-    /**
-     * 加载配置文件
-     * @param  string $confName 配置项名字
-     * @return mix           配置信息
-     */
-    public function loadConf ($confName) {
-
-        if (array_key_exists($confName, $this -> _confs)) {
-            return $this->_confs[$confName];        
-        }
-        // 载入文件
-        return  $this->_confs[$confName] = require_once($this -> _confPath . '/' . $confName . '.php');
-    }
-
-    public function loadModel ($modelName) {
-        if (array_key_exists($modelName, $this->_models)) {
-            return $this->_models[$modelName];
-        }
-        return $this->_models[$modelName] = new $modelName();
-    }
-
-    // private function _autoload() {
-    //     spl_autoload_register (function ($classname) {
-    //         if (strpos($classname, 'Controller')) {
-    //             file_exists($this -> _cPath . '/' . $classname . '.php')
-    //                 && require_once ($this -> _cPath . '/' . $classname . '.php');
-    //         }
-    //         else {
-    //             file_exists($this -> _mPath . '/' . $classname . '.php')
-    //                 && require_once ($this -> _mPath . '/' . $classname . '.php');
-    //         }
-    //     });
-    // }
-    
 
 }
