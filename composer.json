@@ -1,6 +1,8 @@
 {
     "name": "beenlee/framework",
-    "description": "php framework",
+    "description": "A easy php framework",
+    "keywords": ["framework", "mvc", "easy"],
+    "homepage": "https://github.com/daaaabeen/framework",
     "authors": [
         {
             "name": "lidianbin",
