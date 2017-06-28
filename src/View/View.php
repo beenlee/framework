@@ -88,7 +88,7 @@ class View {
     
     public function render($name) {
         if ($name == "json"){
-            return $this -> preRender(json_encode($this->jsonArray));
+            return $this -> preRender(json_encode($this->jsonArray, JSON_UNESCAPED_UNICODE));
         } 
         else if ($name == "debug") {
             return json_encode($this->_tplData, JSON_UNESCAPED_UNICODE);

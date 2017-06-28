@@ -14,22 +14,25 @@ use Beenlee\SqlBuilder\SqlBuilder;
 
 class Model extends Base {
 
-    protected $_sqlBuider;
+    protected static $_sb;
 
+    /**
+     * 以后用下边这个吧不用这个了
+     * @return [type] [description]
+     */
     public function getSqlBuilder () {
-        if (!$this->_sqlBuider) {
-            $this->_sqlBuider = new SqlBuilder();
-        }
-        return $this->_sqlBuider;
+       return self::sqlBuilder();
     }
 
     /**
-     * 删除 delete 的别名
-     * @param  SQL  $sql SQL语句
-     * @return boolean      成功或者失败
+     * 以后用这个吧不用上边那个了
+     * @return [type] [description]
      */
-    public function del ($sql = null) {
-        return $this->delete($sql);
+    public static function sqlBuilder () {
+        if (!self::$_sb) {
+            self::$_sb = new SqlBuilder();
+        }
+        return self::$_sb;
     }
 
     /**
@@ -38,7 +41,16 @@ class Model extends Base {
      * @return boolean      成功或者失败
      */
     public function delete ($sql = null) {
-        $sql === null && $sql = $this->getSqlBuilder()->getSql();
+        return self::del($sql);
+    }
+
+    /**
+     * [remove description]
+     * @param  [type] $sql [description]
+     * @return [type]      [description]
+     */
+    public static function del ($sql = null) {
+        $sql === null && $sql = self::sqlBuilder()->getSql();
         return Storage::getDao()->del($sql);
     }
 
@@ -47,16 +59,26 @@ class Model extends Base {
      * return bool true/false
      */
     public function update ($sql = null) {
-        $sql === null && $sql = $this->getSqlBuilder()->getSql();
+        $sql === null && $sql = self::sqlBuilder()->getSql();
         return Storage::getDao()->update($sql);
     }
+
+    /**
+     * [modify description]
+     * @param  [type] $sql [description]
+     * @return [type]      [description]
+     */
+    // public static function modify ($sql = null) {
+    //     $sql === null && $sql = self::sqlBuilder()->getSql();
+    //     return Storage::getDao()->update($sql);
+    // }
 
     /**
      * 插入一条数据
      * return id or false
      */
     public function insert ($sql = null) {
-        $sql === null && $sql = $this->getSqlBuilder()->getSql();
+        $sql === null && $sql = self::sqlBuilder()->getSql();
         return Storage::getDao()->insert($sql);
     }
 
@@ -65,67 +87,43 @@ class Model extends Base {
      * return false / array
      */
     public function fetchRow ($sql = null) {
-        $sql === null && $sql = $this->getSqlBuilder()->getSql();
-        return Storage::getDao()->fetchRow($sql);
+        return self::fetchOne($sql);
     }
-    
+
     /**
      * 返回多条数据
      * return array
-     */      
+     */
     public function fetchAll ($sql = null) {
-        $sql === null && $sql = $this->getSqlBuilder()->getSql();
+        return self::fetchMany($sql);
+    }
+
+    /**
+     * [fetchOne description]
+     * @param  [type] $sql [description]
+     * @return [type]      [description]
+     */
+    public static function fetchOne ($sql = null) {
+        $sql === null && $sql = self::sqlBuilder()->getSql();
+        return Storage::getDao()->fetchRow($sql);
+    }
+
+    /**
+     * 返回多条数据
+     * return array
+     */
+    public static function fetchMany ($sql = null) {
+        $sql === null && $sql = self::sqlBuilder()->getSql();
         return Storage::getDao()->fetchAll($sql);
     }
-    
+
     /**
     * 查询符合某个条件数据在某个表中的条数
     * @param $table $filter
     * @return int
     */
     public function getTotal ($table, $filter=NULL) {
-        
         return Storage::getDao()->getTotal($table, $filter);
     }
 
-    public function getTotalFromSql($sql) {
-        return Storage::getDao()->getTotalFromSql($sql);
-    }
-
-    /**
-     * 过滤字符串防止被恶意代码攻击
-     * @param 要过滤的字符串
-     * @return 过滤后的字符串
-     */
-    public function filter($str){
- 
-        if (!get_magic_quotes_gpc()) {    // 判断magic_quotes_gpc是否为打开  
-            $str = addslashes($str);    // 进行magic_quotes_gpc没有打开的情况对提交数据的过滤  
-        }  
-        $str = str_replace("_", "\_", $str);    // 把 '_'过滤掉  
-        $str = str_replace("%", "\%", $str);    // 把 '%'过滤掉  
-        $str = nl2br($str);    // 回车转换  
-        $str = htmlspecialchars($str);    // html标记转换  
-        return $str;    
-    }
-
-    public function keyReplace($arr, $keyMap) {
-        $result = array ();
-        foreach ($arr as $i => $item) {
-            foreach ($keyMap as $k => $v) {
-                $result[$i][$v] = $item[$i][$k];
-            }
-        }
-        return $result;
-    }
-
-    /**
-     *
-     * @param unknown_type $ts
-     * @return string
-     */
-    public function Timestamp2Datetime($ts){
-        return date("Y-m-d H:i:s",$ts);
-    }
-    
 }

@@ -74,7 +74,7 @@ class Db {
         if (mysqli_query($conn, $sql)) {
             // return mysqli_affected_rows($conn);
             $affectedRows = mysqli_affected_rows($conn);
-            return $affectedRows > 0 ? $affectedRows : false;
+            return $affectedRows > 0 ? $affectedRows : true;
         }
         else {
             throw new DbException(mysqli_error($conn), mysqli_errno($conn));

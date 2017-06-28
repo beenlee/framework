@@ -38,7 +38,7 @@ class Cookie {
      * @return string   
      */
     public function get($name) {
-        return $_COOKIE[$this->prefix.$name];
+        return isset($_COOKIE[$this->prefix.$name]) ? $_COOKIE[$this->prefix.$name] : null;
     }
     
     /**

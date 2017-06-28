@@ -2,7 +2,7 @@
 namespace Beenlee\Framework\Storage;
 
 class Session {
-    
+
     /**
      * Session-设置session值
      * 使用方法：$this->getUtil('session')->set('ccccccc', 'dddddd');
@@ -19,7 +19,9 @@ class Session {
         }
         return $this;
     }
-    
+
+
+
     /**
      * Session-获取session值
      * 使用方法：$this->getUtil('session')->get('ccccccc');
@@ -45,7 +47,7 @@ class Session {
         }
         return (isset($_SESSION[$key])) ? true : false;
     }
-    
+
     /**
      * Session-删除session值
      * 使用方法：$this->getUtil('session')->del('ccccccc');
@@ -63,7 +65,7 @@ class Session {
         }
         return $this;
     }
-    
+
     /**
      * Session-清空session
      * 使用方法：$this->getUtil('session')->clear();
@@ -74,12 +76,12 @@ class Session {
         session_destroy();
         $_SESSION = array();
     }
-    
+
     /**
      * Session-session_start()   
      */
     public function start() {
         session_start();
     }
-    
+
 }

@@ -4,7 +4,7 @@
  * @author: dabeen(lidianbin@baidu.com)
  * @date:   2017-01-03 16:25:37
  * @Last Modified by:   dabeen
- * @Last Modified time: 2017-01-03 17:03:09
+ * @Last Modified time: 2017-02-28 19:33:19
  */
 
 namespace Beenlee\Framework\Storage;
@@ -38,6 +38,9 @@ class Cache {
     }
 
     public function __call($name, $arguments) {
+        if (isset($this->_config['disable']) && $this->_config['disable']) {
+            return false;
+        }
         return call_user_func_array(
             array($this->getCache(), $name),
             $arguments
